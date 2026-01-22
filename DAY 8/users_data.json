@@ -1,0 +1,42 @@
+import requests
+import json
+
+def fetch_and_save_data(url, headers, output_file):
+    try:
+        # Send GET request with custom headers
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+
+        # Parse JSON response
+        data = response.json()
+
+        # Extract specific fields (e.g., 'id', 'name', 'email' from users API)
+        extracted_data = []
+        for user in data:
+            extracted_user = {
+                'id': user.get('id'),
+                'name': user.get('name'),
+                'email': user.get('email')
+            }
+            extracted_data.append(extracted_user)
+
+        # Serialize and save to JSON file
+        with open(output_file, 'w') as f:
+            json.dump(extracted_data, f, indent=4)
+
+        print(f"Data saved to {output_file}")
+
+    except requests.exceptions.HTTPError as http_err:
+        print(f"HTTP error: {http_err}")
+    except Exception as err:
+        print(f"Other error: {err}")
+
+# Example usage
+url = "https://jsonplaceholder.typicode.com/users"
+headers = {
+    'Accept': 'application/json',
+    'User-Agent': 'My Python Script'
+}
+output_file = 'users_data.json'
+
+fetch_and_save_data(url, headers, output_file)
