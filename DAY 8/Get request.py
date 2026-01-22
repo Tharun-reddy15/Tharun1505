@@ -1,7 +1,7 @@
 import requests
 
-url = "https://api.restful-api.dev/objects"
-response = requests.get(url)
+geturl = "https://api.restful-api.dev/objects"
+response = requests.get(geturl)
 
 print(response.status_code)
 print(response.json())
