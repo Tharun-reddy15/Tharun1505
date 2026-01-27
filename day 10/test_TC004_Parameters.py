@@ -4,3 +4,11 @@ import pytest
 def test_add(a, b, res):
     print(a + b)
     assert a + b == res
+
+@pytest.mark.smoke
+def test_smoke():
+    assert True
+
+@pytest.mark.skip(reason="Not Ready")
+def test_skip():
+    pass
