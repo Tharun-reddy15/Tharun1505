@@ -12,4 +12,4 @@ def test_one(data):
 def test_two(data):
     # data = [1, 2, 3]
     print(len(data))
-    assert len(data) == 6
+    assert len(data) == 3
