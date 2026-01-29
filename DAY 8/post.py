@@ -11,7 +11,6 @@ body1 = {
     }
 }
 
-r1 = requests.post(posturl, json=body1);
-print("post status code", r1.status_code)
+r1 = requests.post(posturl, json=body1)
+print(r1.status_code)
 print(r1.json())
-
