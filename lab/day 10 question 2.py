@@ -1,67 +1,86 @@
+import pytest
 
-# ----------------------
-# app.py
-# ----------------------
+# =========================
+# APPLICATION CODE
+# =========================
+
 def add(a, b):
     return a + b
 
+def sub(a, b):
+    return a - b
+
+def mul(a, b):
+    return a * b
+
 def divide(a, b):
     if b == 0:
-        raise ValueError("Division by zero")
+        raise ZeroDivisionError("Division by zero")
     return a / b
 
 
-# ----------------------
-# conftest.py
-# ----------------------
-import pytest
+# =========================
+# FIXTURES
+# =========================
 
 @pytest.fixture(scope="function")
-def numbers():
+def sample_number():
+    return 4, 2
+
+@pytest.fixture(scope="function")
+def sample_numbers():
     return 10, 5
 
 @pytest.fixture(scope="module")
-def shared_resource():
-    print("\n[SETUP] Shared resource")
-    resource = {"env": "QA"}
-    yield resource
-    print("\n[TEARDOWN] Shared resource")
+def calculator_resource():
+    print("\n[SETUP] Calculator Resource Created")
+    yield
+    print("\n[TEARDOWN] Calculator Resource Closed")
 
 
-# ----------------------
-# test_calculator_one.py
-# ----------------------
-from app import add, divide
+# =========================
+# xUnit STYLE METHODS
+# =========================
 
 def setup_module(module):
-    print("\n[setup_module]")
+    print("\n[SETUP MODULE] All-in-one Test File")
 
 def teardown_module(module):
-    print("\n[teardown_module]")
+    print("\n[TEARDOWN MODULE] All-in-one Test File")
 
 def setup_function(function):
-    print("\n[setup_function]")
+    print("\n[SETUP FUNCTION]")
 
 def teardown_function(function):
-    print("\n[teardown_function]")
+    print("\n[TEARDOWN FUNCTION]")
 
-def test_addition(numbers, shared_resource):
-    a, b = numbers
+
+# =========================
+# TEST CASES
+# =========================
+
+def test_addition(sample_numbers, calculator_resource):
+    a, b = sample_numbers
     assert add(a, b) == 15
 
-def test_division(numbers):
-    a, b = numbers
+def test_subtraction(sample_numbers):
+    a, b = sample_numbers
+    assert sub(a, b) == 5
+
+def test_multiplication(sample_numbers):
+    a, b = sample_numbers
+    assert mul(a, b) == 50
+
+def test_division(sample_number):
+    a, b = sample_number
     assert divide(a, b) == 2
 
+def test_division_by_zero():
+    with pytest.raises(ZeroDivisionError):
+        divide(2, 0)
 
-# ----------------------
-# test_calculator_two.py
-# ----------------------
-import pytest
-from app import divide
 
-def test_division_by_zero(shared_resource):
-    with pytest.raises(ValueError):
-        divide(10, 0)
+
+
 
 
