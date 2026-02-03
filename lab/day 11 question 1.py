@@ -1,81 +1,82 @@
+import pytest
+
+# =========================
+# APPLICATION CODE
+# =========================
+
 def add(a, b):
     return a + b
 
+def sub(a, b):
+    return a - b
+
+def mul(a, b):
+    return a * b
+
 def divide(a, b):
+    if b == 0:
+        raise ZeroDivisionError("Division by zero")
     return a / b
 
-[pytest]
-markers =
-    slow: marks tests as slow
-    skip_test: marks tests to be skipped
-    xfail_test: marks tests expected to fail
 
-testpaths = tests
+# =========================
+# FIXTURES
+# =========================
 
-import pytest
+@pytest.fixture(scope="function")
+def sample_number():
+    return 4, 2
 
-def pytest_addoption(parser):
-    parser.addoption(
-        "--env",
-        action="store",
-        default="dev",
-        help="Environment to run tests against (dev/stage/prod)"
-    )
+@pytest.fixture(scope="function")
+def sample_numbers():
+    return 10, 5
 
-@pytest.fixture
-def env(request):
-    return request.config.getoption("--env")
-
-import pytest
-from calculator import add, divide
-
-# -------------------------------
-# PARAMETERIZED TEST
-# -------------------------------
-@pytest.mark.parametrize(
-    "a,b,expected",
-    [
-        (1, 2, 3),
-        (5, 5, 10),
-        (-1, 1, 0),
-    ]
-)
-def test_addition(a, b, expected):
-    assert add(a, b) == expected
+@pytest.fixture(scope="module")
+def calculator_resource():
+    print("\n[SETUP] Calculator Resource Created")
+    yield
+    print("\n[TEARDOWN] Calculator Resource Closed")
 
 
-# -------------------------------
-# SKIP TEST
-# -------------------------------
-@pytest.mark.skip(reason="Feature not implemented yet")
-def test_future_feature():
-    assert True
+# =========================
+# xUnit STYLE METHODS
+# =========================
+
+def setup_module(module):
+    print("\n[SETUP MODULE] All-in-one Test File")
+
+def teardown_module(module):
+    print("\n[TEARDOWN MODULE] All-in-one Test File")
+
+def setup_function(function):
+    print("\n[SETUP FUNCTION]")
+
+def teardown_function(function):
+    print("\n[TEARDOWN FUNCTION]")
 
 
-# -------------------------------
-# XFAIL TEST
-# -------------------------------
-@pytest.mark.xfail(reason="Division by zero not handled yet")
-def test_divide_by_zero():
-    divide(10, 0)
+# =========================
+# TEST CASES
+# =========================
 
+def test_addition(sample_numbers, calculator_resource):
+    a, b = sample_numbers
+    assert add(a, b) == 15
 
-# -------------------------------
-# USING CUSTOM CLI OPTION
-# -------------------------------
-def test_environment(env):
-    print(f"Running tests in {env} environment")
-    assert env in ["dev", "stage", "prod"]
+def test_subtraction(sample_numbers):
+    a, b = sample_numbers
+    assert sub(a, b) == 5
 
+def test_multiplication(sample_numbers):
+    a, b = sample_numbers
+    assert mul(a, b) == 50
 
-# -------------------------------
-# CONDITIONAL SKIP
-# -------------------------------
-@pytest.mark.skipif(
-    condition=True,
-    reason="Condition met, skipping test"
-)
-def test_conditional_skip():
-    assert add(2, 2) == 4
+def test_division(sample_number):
+    a, b = sample_number
+    assert divide(a, b) == 2
 
+def test_division_by_zero():
+    with pytest.raises(ZeroDivisionError):
+        divide(2, 0) 
 
+    
